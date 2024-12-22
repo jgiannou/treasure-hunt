@@ -3,6 +3,7 @@ import { Box, Button, Heading, Text, Input } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import background from "../assets/background.webp";
 
 const Landing = () => {
   const [promoCode, setPromoCode] = useState("");
@@ -19,9 +20,9 @@ const Landing = () => {
 
   return (
     <Box
-      bg="url('/images/medieval-scroll.jpg')" // Replace with your medieval-themed image
-      bgSize="cover"
-      bgPosition="center"
+      backgroundImage={`url(${background})`}
+      backgroundSize="cover"
+      backgroundPosition="center"
       minHeight="100vh"
       color="white"
       textAlign="center"
@@ -31,7 +32,13 @@ const Landing = () => {
       alignItems="center"
       justifyContent="center"
     >
-      <Heading fontSize="4xl" mb={6} fontFamily="'MedievalSharp', cursive">
+      <Heading
+        fontSize="50px"
+        fontWeight="bold"
+        color="white"
+        mb={6}
+        fontFamily="'MedievalSharp', cursive"
+      >
         A Call to the Brave
       </Heading>
       <Text
