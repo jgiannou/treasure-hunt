@@ -1,4 +1,11 @@
-import { Box, Button, Heading, Input, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button as ChakraButton,
+  Heading,
+  Input,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import background from "../../assets/background.webp";
@@ -10,12 +17,31 @@ export const LandingRiddle = () => {
   const navigate = useNavigate();
   const { setRiddleCompleted } = useAuth();
 
-  const handleRiddleSubmit = () => {
+  const handleRiddleSubmit = async () => {
     const validAnswers = ["φωτια", "φωτιά", "fire"];
     if (validAnswers.includes(riddleAnswer.toLowerCase())) {
-      const success = setRiddleCompleted(email);
-      if (success) {
-        navigate("/heroes");
+      if (email.includes("@")) {
+        // Submit to Netlify Forms
+        try {
+          const formData = new FormData();
+          formData.append("form-name", "riddle-submissions");
+          formData.append("email", email);
+          formData.append("date", new Date().toLocaleString());
+
+          await fetch("/", {
+            method: "POST",
+            body: formData,
+          });
+        } catch (error) {
+          console.error("Error submitting form:", error);
+        }
+
+        const success = setRiddleCompleted(email);
+        if (success) {
+          navigate("/heroes");
+        } else {
+          alert("Παρακαλώ εισάγετε μια έγκυρη διεύθυνση email.");
+        }
       } else {
         alert("Παρακαλώ εισάγετε μια έγκυρη διεύθυνση email.");
       }
@@ -46,6 +72,18 @@ export const LandingRiddle = () => {
         borderRadius="10px"
         padding={20}
       >
+        {/* Hidden Netlify Form */}
+        <form
+          name="riddle-submissions"
+          method="POST"
+          data-netlify="true"
+          hidden
+        >
+          <input type="email" name="email" />
+          <input type="text" name="date" />
+          <input type="hidden" name="form-name" value="riddle-submissions" />
+        </form>
+
         <VStack gap={6}>
           <Heading
             fontSize="50px"
@@ -105,14 +143,14 @@ export const LandingRiddle = () => {
               fontFamily="'EB Garamond', serif"
               textAlign="center"
             />
-            <Button
+            <ChakraButton
               colorScheme="yellow"
               size="lg"
               onClick={handleRiddleSubmit}
               fontFamily="'EB Garamond', serif"
             >
               Ξεκίνα το Ταξίδι
-            </Button>
+            </ChakraButton>
           </VStack>
         </VStack>
       </Box>
