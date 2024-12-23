@@ -10,10 +10,11 @@ export const LandingAuth = () => {
   const navigate = useNavigate();
 
   const handlePromoSubmit = () => {
-    if (login(promoCode)) {
+    const success = login(promoCode);
+    if (success) {
       navigate("/riddle");
     } else {
-      alert("Invalid promo code. Please try again.");
+      alert("Λάθος κωδικός πρόσβασης. Παρακαλώ δοκιμάστε ξανά.");
     }
   };
 

@@ -13,8 +13,8 @@ export const LandingRiddle = () => {
   const handleRiddleSubmit = () => {
     const validAnswers = ["φωτια", "φωτιά", "fire"];
     if (validAnswers.includes(riddleAnswer.toLowerCase())) {
-      if (email.includes("@")) {
-        setRiddleCompleted(email);
+      const success = setRiddleCompleted(email);
+      if (success) {
         navigate("/heroes");
       } else {
         alert("Παρακαλώ εισάγετε μια έγκυρη διεύθυνση email.");

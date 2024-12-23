@@ -25,6 +25,21 @@ export async function getSelectedHeroes(): Promise<string[]> {
   return data.map((selection) => selection.hero_name);
 }
 
+export async function getUserHero(email: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("hero_selections")
+    .select("hero_name")
+    .eq("email", email)
+    .single();
+
+  if (error) {
+    console.error("Error fetching user hero:", error);
+    return null;
+  }
+
+  return data?.hero_name || null;
+}
+
 export async function selectHero(
   email: string,
   heroName: string

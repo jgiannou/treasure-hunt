@@ -31,7 +31,7 @@ export const HeroDetails = () => {
   const [error, setError] = useState<string | null>(null);
   const { heroId } = useParams();
   const navigate = useNavigate();
-  const { setHeroSelected } = useAuth();
+  const { setHeroSelected, selectedHero } = useAuth();
 
   const hero = heroes.find(
     (h) => h.name.toLowerCase() === heroId?.toLowerCase()
@@ -40,14 +40,20 @@ export const HeroDetails = () => {
   useEffect(() => {
     const checkHeroAvailability = async () => {
       const selectedHeroes = await getSelectedHeroes();
-      if (hero && selectedHeroes.includes(hero.name)) {
-        setIsHeroAvailable(false);
+      if (hero) {
+        if (selectedHero === hero.name) {
+          setIsHeroAvailable(true);
+        } else if (selectedHeroes.includes(hero.name)) {
+          setIsHeroAvailable(false);
+        } else {
+          setIsHeroAvailable(true);
+        }
       }
       setIsLoading(false);
     };
 
     checkHeroAvailability();
-  }, [hero]);
+  }, [hero, selectedHero]);
 
   if (!hero) {
     return <Navigate to="/heroes" />;
@@ -76,7 +82,7 @@ export const HeroDetails = () => {
     );
   }
 
-  if (!isHeroAvailable) {
+  if (!isHeroAvailable || (selectedHero && selectedHero !== hero.name)) {
     return (
       <Box
         backgroundImage={`url(${background})`}
@@ -112,6 +118,8 @@ export const HeroDetails = () => {
     );
   }
 
+  const showSelectButton = !selectedHero || selectedHero !== hero.name;
+
   const handleHeroConfirm = async () => {
     const userEmail = localStorage.getItem("userEmail");
     if (!userEmail) {
@@ -124,7 +132,7 @@ export const HeroDetails = () => {
     if (success) {
       setHeroSelected(hero.name);
       setIsOpen(false);
-      navigate("/clue");
+      navigate("/hero-intro");
     } else {
       setError(
         "Υπήρξε πρόβλημα με την επιλογή του ήρωα. Παρακαλώ προσπαθήστε ξανά."
@@ -238,10 +246,10 @@ export const HeroDetails = () => {
             {hero.skills.map((skill) => (
               <Box
                 key={skill.name}
-                p={4}
+                padding={4}
                 bg="rgba(255, 215, 0, 0.1)"
                 borderRadius="md"
-                border="1px solid rgba(255, 215, 0, 0.3)"
+                border="2px solid rgba(255, 215, 0, 0.3)"
               >
                 <Text
                   fontWeight="bold"
@@ -262,14 +270,16 @@ export const HeroDetails = () => {
             ))}
           </SimpleGrid>
 
-          <Button
-            size="lg"
-            onClick={() => setIsOpen(true)}
-            variant="outline"
-            margin={8}
-          >
-            Επέλεξε τον {hero.name}
-          </Button>
+          {showSelectButton && (
+            <Button
+              size="lg"
+              onClick={() => setIsOpen(true)}
+              variant="outline"
+              margin={8}
+            >
+              Επέλεξε τον {hero.name}
+            </Button>
+          )}
 
           <DialogRoot
             open={isOpen}
@@ -306,7 +316,7 @@ export const HeroDetails = () => {
                 position="relative"
                 backdropFilter="blur(10px)"
               >
-                <Box position="absolute" right={4} top={4}>
+                <Box position="absolute" left={4} top={4}>
                   <DialogCloseTrigger />
                 </Box>
                 <DialogHeader position="relative" mb={8}>
