@@ -21,10 +21,14 @@ import { useNavigate, useParams, Navigate } from "react-router-dom";
 import { heroes } from "../data/heroes";
 import background from "../assets/background.webp";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSelectedHeroes, selectHero } from "../lib/supabase";
 
 export const HeroDetails = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isHeroAvailable, setIsHeroAvailable] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { heroId } = useParams();
   const navigate = useNavigate();
   const { setHeroSelected } = useAuth();
@@ -33,14 +37,100 @@ export const HeroDetails = () => {
     (h) => h.name.toLowerCase() === heroId?.toLowerCase()
   );
 
+  useEffect(() => {
+    const checkHeroAvailability = async () => {
+      const selectedHeroes = await getSelectedHeroes();
+      if (hero && selectedHeroes.includes(hero.name)) {
+        setIsHeroAvailable(false);
+      }
+      setIsLoading(false);
+    };
+
+    checkHeroAvailability();
+  }, [hero]);
+
   if (!hero) {
     return <Navigate to="/heroes" />;
   }
 
-  const handleHeroConfirm = () => {
-    setHeroSelected(hero.name);
-    setIsOpen(false);
-    navigate("/clue");
+  if (isLoading) {
+    return (
+      <Box
+        backgroundImage={`url(${background})`}
+        backgroundSize="cover"
+        backgroundPosition="center"
+        minHeight="100vh"
+        color="white"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Text
+          fontSize="2xl"
+          color="yellow.200"
+          fontFamily="'EB Garamond', serif"
+        >
+          Φορτώνει...
+        </Text>
+      </Box>
+    );
+  }
+
+  if (!isHeroAvailable) {
+    return (
+      <Box
+        backgroundImage={`url(${background})`}
+        backgroundSize="cover"
+        backgroundPosition="center"
+        minHeight="100vh"
+        color="white"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <VStack gap={6}>
+          <Text
+            fontSize="3xl"
+            color="red.300"
+            fontFamily="'EB Garamond', serif"
+          >
+            Ο ήρωας δεν είναι διαθέσιμος
+          </Text>
+          <Button
+            onClick={() => navigate("/heroes")}
+            variant="ghost"
+            size="lg"
+            color="yellow.200"
+            _hover={{
+              bg: "rgba(255, 215, 0, 0.1)",
+            }}
+          >
+            Επιστροφή στους Ήρωες
+          </Button>
+        </VStack>
+      </Box>
+    );
+  }
+
+  const handleHeroConfirm = async () => {
+    const userEmail = localStorage.getItem("userEmail");
+    if (!userEmail) {
+      setError("Δεν βρέθηκε το email σας. Παρακαλώ προσπαθήστε ξανά.");
+      setIsOpen(false);
+      return;
+    }
+
+    const success = await selectHero(userEmail, hero.name);
+    if (success) {
+      setHeroSelected(hero.name);
+      setIsOpen(false);
+      navigate("/clue");
+    } else {
+      setError(
+        "Υπήρξε πρόβλημα με την επιλογή του ήρωα. Παρακαλώ προσπαθήστε ξανά."
+      );
+      setIsOpen(false);
+    }
   };
 
   return (
@@ -52,6 +142,23 @@ export const HeroDetails = () => {
       color="white"
       position="relative"
     >
+      {error && (
+        <Box
+          position="fixed"
+          top={4}
+          left="50%"
+          transform="translateX(-50%)"
+          bg="rgba(200, 0, 0, 0.2)"
+          color="red.300"
+          px={6}
+          py={3}
+          borderRadius="md"
+          border="1px solid rgba(255, 0, 0, 0.3)"
+          zIndex={1000}
+        >
+          <Text fontFamily="'EB Garamond', serif">{error}</Text>
+        </Box>
+      )}
       <Button
         position="absolute"
         top={6}
@@ -189,13 +296,17 @@ export const HeroDetails = () => {
             >
               <Box
                 bg="rgba(0, 20, 20, 0.95)"
+                p={10}
+                pt={12}
                 borderRadius="lg"
                 border="2px solid rgba(255, 215, 0, 0.5)"
                 boxShadow="0 0 20px rgba(255, 215, 0, 0.2)"
+                maxW="md"
+                w="90%"
                 position="relative"
                 backdropFilter="blur(10px)"
               >
-                <Box position="absolute" left={"4px"} top={"4px"}>
+                <Box position="absolute" right={4} top={4}>
                   <DialogCloseTrigger />
                 </Box>
                 <DialogHeader position="relative" mb={8}>
@@ -206,7 +317,7 @@ export const HeroDetails = () => {
                     fontFamily="'EB Garamond', serif"
                     textAlign="center"
                     textShadow="0 0 10px rgba(255, 215, 0, 0.3)"
-                    padding="4px"
+                    px={4}
                   >
                     Επιβεβαίωση Επιλογής Ήρωα
                   </DialogTitle>
@@ -218,7 +329,7 @@ export const HeroDetails = () => {
                   fontFamily="'EB Garamond', serif"
                   textAlign="center"
                   lineHeight="tall"
-                  padding="4px"
+                  px={6}
                 >
                   Είσαι σίγουρος ότι θέλεις να επιλέξεις τον{" "}
                   <Text as="span" color="yellow.200" fontWeight="bold">
@@ -232,7 +343,7 @@ export const HeroDetails = () => {
                   gap={8}
                   mt={10}
                   mb={2}
-                  padding="4px"
+                  px={6}
                 >
                   <Button
                     variant="ghost"
@@ -241,7 +352,7 @@ export const HeroDetails = () => {
                       bg: "rgba(255, 255, 255, 0.1)",
                     }}
                     size="lg"
-                    padding="4px"
+                    px={8}
                   >
                     Άκυρο
                   </Button>
@@ -254,7 +365,7 @@ export const HeroDetails = () => {
                       bg: "rgba(255, 215, 0, 0.3)",
                     }}
                     size="lg"
-                    padding="4px"
+                    px={8}
                   >
                     Επιβεβαίωση
                   </Button>

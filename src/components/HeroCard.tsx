@@ -1,5 +1,13 @@
 import { motion } from "framer-motion";
-import { Card, Image, Text, Heading, SimpleGrid, Box } from "@chakra-ui/react";
+import {
+  Card,
+  Image,
+  Text,
+  Heading,
+  SimpleGrid,
+  Box,
+  Badge,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 interface Skill {
@@ -13,20 +21,34 @@ interface HeroProps {
   story: string;
   image: string;
   skills: Skill[];
+  isAvailable?: boolean;
 }
 
-const HeroCard = ({ name, title, story, image, skills }: HeroProps) => {
+const HeroCard = ({
+  name,
+  title,
+  story,
+  image,
+  skills,
+  isAvailable = true,
+}: HeroProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
+    if (!isAvailable) return;
     navigate(`/hero/${name.toLowerCase()}`);
   };
 
   return (
     <motion.div
-      whileHover={{ y: -8 }}
+      whileHover={{ y: isAvailable ? -8 : 0 }}
       transition={{ duration: 0.3 }}
-      style={{ height: "100%", cursor: "pointer" }}
+      style={{
+        height: "100%",
+        cursor: isAvailable ? "pointer" : "not-allowed",
+        filter: !isAvailable ? "grayscale(0.7)" : "none",
+        opacity: !isAvailable ? 0.8 : 1,
+      }}
       onClick={handleClick}
     >
       <Card.Root
@@ -39,7 +61,25 @@ const HeroCard = ({ name, title, story, image, skills }: HeroProps) => {
         border="1px solid rgba(255, 215, 0, 0.3)"
         background="rgba(1, 50, 32, 0.65)"
         padding={6}
+        position="relative"
       >
+        {!isAvailable && (
+          <Badge
+            position="absolute"
+            top={4}
+            right={4}
+            colorScheme="red"
+            fontSize="md"
+            px={3}
+            py={1}
+            borderRadius="full"
+            bg="rgba(200, 0, 0, 0.2)"
+            border="1px solid rgba(255, 0, 0, 0.3)"
+            fontFamily="'EB Garamond', serif"
+          >
+            Μη Διαθέσιμος
+          </Badge>
+        )}
         <Card.Body
           p={6}
           gap={6}

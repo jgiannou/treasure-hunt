@@ -2,8 +2,49 @@ import { Box, Grid, GridItem, Heading, Text } from "@chakra-ui/react";
 import background from "../../assets/background.webp";
 import HeroCard from "../../components/HeroCard";
 import { heroes } from "../../data/heroes";
+import { useEffect, useState } from "react";
+import { getSelectedHeroes } from "../../lib/supabase";
 
 export const LandingHeroes = () => {
+  const [selectedHeroes, setSelectedHeroes] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSelectedHeroes = async () => {
+      const selected = await getSelectedHeroes();
+      setSelectedHeroes(selected);
+      setIsLoading(false);
+    };
+
+    loadSelectedHeroes();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <Box
+        backgroundImage={`url(${background})`}
+        backgroundSize="cover"
+        backgroundPosition="center"
+        minHeight="100vh"
+        color="white"
+        textAlign="center"
+        p={10}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Text
+          fontSize="2xl"
+          color="yellow.200"
+          fontFamily="'EB Garamond', serif"
+        >
+          Φορτώνει...
+        </Text>
+      </Box>
+    );
+  }
+
   return (
     <Box
       backgroundImage={`url(${background})`}
@@ -49,7 +90,10 @@ export const LandingHeroes = () => {
         >
           {heroes.map((hero) => (
             <GridItem key={hero.name} height="100%">
-              <HeroCard {...hero} />
+              <HeroCard
+                {...hero}
+                isAvailable={!selectedHeroes.includes(hero.name)}
+              />
             </GridItem>
           ))}
         </Grid>
