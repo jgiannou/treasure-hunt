@@ -74,7 +74,7 @@ export const HeroIntro = () => {
               <Image
                 src={hero.fightImage}
                 alt={`${hero.name} in battle`}
-                objectFit={["cover", null, "contain"]} // Changed to be responsive
+                objectFit={["contain", null, "contain"]} // Changed to be responsive
                 height="400px"
                 width="100%"
                 filter="drop-shadow(0 0 20px rgba(255, 215, 0, 0.2))"

@@ -225,7 +225,7 @@ export const HeroDetails = () => {
             src={hero.fightImage}
             alt={`${hero.name} in battle`}
             objectFit="contain"
-            height="300px"
+            height="400px"
             width="100%"
           />
 
