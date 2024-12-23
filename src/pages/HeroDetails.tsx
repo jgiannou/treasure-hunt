@@ -135,7 +135,7 @@ export const HeroDetails = () => {
       navigate("/hero-intro");
     } else {
       setError(
-        "Υπήρξε πρόβλημα με την επιλογή του ήρωα. Παρακαλώ προσπαθήστε ξανά."
+        "Υπήρξε πρόβλημα με την επιλογή του ήρω��. Παρακαλώ προσπαθήστε ξανά."
       );
       setIsOpen(false);
     }
@@ -201,7 +201,7 @@ export const HeroDetails = () => {
         </svg>
         Πίσω στους Ήρωες
       </Button>
-      <Box mx="auto" padding="100px">
+      <Box mx="auto" padding={{ base: 4, md: "100px" }}>
         <VStack gap={8} align="center" background="rgba(0, 60, 40, 0.6)">
           <Heading
             fontSize="50px"
@@ -351,9 +351,8 @@ export const HeroDetails = () => {
                   display="flex"
                   justifyContent="center"
                   gap={8}
-                  mt={10}
-                  mb={2}
-                  px={6}
+                  padding="10px"
+                  marginTop="10px"
                 >
                   <Button
                     variant="ghost"

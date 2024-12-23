@@ -81,7 +81,7 @@ export const LandingHeroes = () => {
         </Text>
         <Grid
           padding={20}
-          templateColumns="repeat(2, 1fr)"
+          templateColumns={{ md: "repeat(2, 1fr)" }}
           gap="60px"
           justifyItems="center"
           alignItems="center"

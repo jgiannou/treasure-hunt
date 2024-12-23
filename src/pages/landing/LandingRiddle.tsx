@@ -135,9 +135,11 @@ export const LandingRiddle = () => {
               onChange={(e) => setEmail(e.target.value)}
               fontFamily="'EB Garamond', serif"
               textAlign="center"
+              fontSize="20px"
             />
             <Input
               placeholder="Η απάντησή σου"
+              fontSize="20px"
               value={riddleAnswer}
               onChange={(e) => setRiddleAnswer(e.target.value)}
               fontFamily="'EB Garamond', serif"
@@ -148,6 +150,8 @@ export const LandingRiddle = () => {
               size="lg"
               onClick={handleRiddleSubmit}
               fontFamily="'EB Garamond', serif"
+              fontSize="20px"
+              marginTop="20px"
             >
               Ξεκίνα το Ταξίδι
             </ChakraButton>

@@ -42,7 +42,10 @@ export const HeroIntro = () => {
       color="white"
       position="relative"
     >
-      <Box mx="auto" padding="100px">
+      <Box
+        mx="auto"
+        padding={{ base: "10px", sm: "100px", md: "100px", lg: "100px" }}
+      >
         <VStack gap={10} align="center" maxW="4xl" mx="auto">
           {!showChapter ? (
             <>
@@ -71,7 +74,7 @@ export const HeroIntro = () => {
               <Image
                 src={hero.fightImage}
                 alt={`${hero.name} in battle`}
-                objectFit="contain"
+                objectFit={["cover", null, "contain"]} // Changed to be responsive
                 height="400px"
                 width="100%"
                 filter="drop-shadow(0 0 20px rgba(255, 215, 0, 0.2))"
@@ -102,7 +105,7 @@ export const HeroIntro = () => {
                   Μυστικές Ικανότητες
                 </Heading>
 
-                <SimpleGrid columns={2} gap={8} width="100%" px={6}>
+                <SimpleGrid columns={[1, 1, 2]} gap={8} width="100%" px={6}>
                   {hero.skills.map((skill) => (
                     <Box
                       key={skill.name}
@@ -255,7 +258,7 @@ export const HeroIntro = () => {
                 >
                   Χίλια χρόνια μετά, ο Βασιλιάς Άλντεν ο Σοφός κάθισε στον θρόνο
                   της Ελδόρια, φύλακας της Πέτρας. Επί βασιλείας του, το
-                  βασίλειο έζησε εποχές δόξας και τρόμου.
+                  βασίλειο έ��ησε εποχές δόξας και τρόμου.
                   <br /> Οι εχθροί του εξαφανίζονταν στη φλόγα της Πέτρας, αλλά
                   η δύναμή της άρχισε να εξασθενεί.
                   <br /> Οι προφήτες προειδοποίησαν πως η Ένατη Νύχτα πλησίαζε
