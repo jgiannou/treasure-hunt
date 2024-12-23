@@ -5,10 +5,10 @@ const config = defineConfig({
     tokens: {
       fonts: {
         heading: {
-          value: "'MedievalSharp', cursive",
+          value: "'EB Garamond', serif",
         },
         body: {
-          value: "'MedievalSharp', cursive",
+          value: "'EB Garamond', serif",
         },
       },
     },

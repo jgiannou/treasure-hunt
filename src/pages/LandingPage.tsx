@@ -1,20 +1,48 @@
 // src/pages/Landing.tsx
-import { Box, Button, Heading, Text, Input } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Text,
+  Input,
+  VStack,
+  Grid,
+  GridItem,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import background from "../assets/background.webp";
+import HeroCard from "../components/HeroCard";
+import { heroes } from "../data/heroes";
 
 const Landing = () => {
   const [promoCode, setPromoCode] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [email, setEmail] = useState("");
+  const [riddleAnswer, setRiddleAnswer] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [showHeroes, setShowHeroes] = useState(false);
 
-  const handleSubmit = () => {
+  const handlePromoSubmit = () => {
     if (login(promoCode)) {
-      navigate("/clue");
+      setIsAuthenticated(true);
     } else {
       alert("Invalid promo code. Please try again.");
+    }
+  };
+
+  const handleQuestSubmit = () => {
+    const validAnswers = ["φωτια", "φωτιά", "fire"];
+    if (validAnswers.includes(riddleAnswer.toLowerCase())) {
+      if (email.includes("@")) {
+        setShowHeroes(true);
+      } else {
+        alert("Παρακαλώ εισάγετε μια έγκυρη διεύθυνση email.");
+      }
+    } else {
+      alert("Λάθος απάντηση. Προσπάθησε ξανά!");
     }
   };
 
@@ -32,54 +60,166 @@ const Landing = () => {
       alignItems="center"
       justifyContent="center"
     >
-      <Heading
-        fontSize="50px"
-        fontWeight="bold"
-        color="white"
-        mb={6}
-        fontFamily="'MedievalSharp', cursive"
-      >
-        A Call to the Brave
-      </Heading>
-      <Text
-        fontSize="lg"
-        mb={8}
-        maxWidth="600px"
-        fontFamily="'MedievalSharp', cursive"
-      >
-        In a land of knights and dragons, a treasure awaits. The hunt begins in
-        one month, but only those who solve the first riddle shall have a chance
-        to claim it. Will you accept the challenge?
-      </Text>
-      <Box mb={6}>
-        <Text
-          fontSize="xl"
-          fontWeight="bold"
-          fontFamily="'MedievalSharp', cursive"
+      {!showHeroes && (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          backgroundColor="rgba(51, 51, 51, 0.75);"
+          borderRadius="10px"
+          padding={20}
         >
-          "I am always hungry, I must always be fed. The finger I touch, will
-          soon turn red. What am I?"
-        </Text>
-      </Box>
-      <Box mt={6}>
-        <Input
-          placeholder="Enter Promo Code"
-          value={promoCode}
-          onChange={(e) => setPromoCode(e.target.value)}
-          width="300px"
-          fontFamily="'MedievalSharp', cursive"
+          {!isAuthenticated ? (
+            // Authentication Form
+            <VStack gap={6}>
+              <Heading
+                fontSize="40px"
+                fontWeight="bold"
+                color="white"
+                fontFamily="'EB Garamond', serif"
+              >
+                Enter Eldoria
+              </Heading>
+              <Input
+                placeholder="Enter Promo Code"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value)}
+                width="300px"
+                fontFamily="'EB Garamond', serif"
+                textAlign="center"
+                mb={4}
+              />
+              <Button
+                colorScheme="yellow"
+                size="lg"
+                onClick={handlePromoSubmit}
+                fontFamily="'EB Garamond', serif"
+              >
+                Enter
+              </Button>
+            </VStack>
+          ) : (
+            // Quest Details and Riddle Form
+            <VStack gap={6}>
+              <Heading
+                fontSize="50px"
+                fontWeight="bold"
+                color="white"
+                fontFamily="'EB Garamond', serif"
+              >
+                To Κάλεσμα των Γενναίων
+              </Heading>
+              <Text
+                fontSize="22px"
+                color="white"
+                fontWeight="bold"
+                maxWidth="600px"
+                fontFamily="'EB Garamond', serif"
+                margin={0}
+                padding={0}
+              >
+                Το σκοτάδι επιστρέφει στην Eldoria.
+              </Text>
+              <Text
+                fontSize="25px"
+                color="white"
+                fontWeight="bold"
+                maxWidth="600px"
+                fontFamily="'EB Garamond', serif"
+                margin={0}
+              >
+                Οι φλόγες της Πέτρς έχουν σβήσει, και η σκιά του Νόρβαθ βαδίζει
+                ξανά στις ξεχασμένες πεδιάδες. Το βασίλειο χρειάζεται ήρωες. Για
+                να ξεκινήσεις το ταξίδι σου, πρέπει να λύσεις τον γρίφο:
+              </Text>
+              <Text
+                color="white"
+                fontSize="20px"
+                fontWeight="bold"
+                fontFamily="'EB Garamond', serif"
+                fontStyle="italic"
+              >
+                "Γεννιέμαι από στάχτη και πεινώ ασταμάτητα.
+                <br /> Αν με θρέψεις, θα σε ζεστάνω.
+                <br /> Αν με αγγίξεις, θα σε καταστρέψω.
+                <br /> Τι είμαι?"
+              </Text>
+              <VStack gap={4} width="300px">
+                <Input
+                  placeholder="Το Email σου"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  fontFamily="'EB Garamond', serif"
+                  textAlign="center"
+                />
+                <Input
+                  placeholder="Η απάντησή σου"
+                  value={riddleAnswer}
+                  onChange={(e) => setRiddleAnswer(e.target.value)}
+                  fontFamily="'EB Garamond', serif"
+                  textAlign="center"
+                />
+                <Button
+                  colorScheme="white"
+                  size="xl"
+                  onClick={handleQuestSubmit}
+                  fontFamily="'EB Garamond', serif"
+                >
+                  Ξεκίνα το Ταξίδι
+                </Button>
+              </VStack>
+            </VStack>
+          )}
+        </Box>
+      )}
+      {showHeroes && (
+        <Box
+          mt={10}
+          width="full"
+          maxW="7xl"
+          mx="auto"
+          px={6}
           textAlign="center"
-          mb={4}
-        />
-        <Button
-          colorScheme="yellow"
-          size="lg"
-          onClick={handleSubmit}
-          fontFamily="'MedievalSharp', cursive"
         >
-          Begin the Quest
-        </Button>
-      </Box>
+          <Heading
+            fontSize="40px"
+            color="white"
+            mb={10}
+            fontFamily="'EB Garamond', serif"
+            textShadow="0 0 10px rgba(255, 215, 0, 0.3)"
+          >
+            Οι Ήρωες της Eldoria
+          </Heading>
+          <Grid
+            padding={20}
+            templateColumns="repeat(2, 1fr)"
+            gap="60px"
+            justifyItems="center"
+            alignItems="center"
+            margin="auto"
+            width="70%"
+          >
+            {heroes.map((hero) => (
+              <GridItem key={hero.name} height="100%">
+                <HeroCard {...hero} />
+              </GridItem>
+            ))}
+          </Grid>
+          <Button
+            mt={12}
+            size="lg"
+            bg="rgba(255, 215, 0, 0.1)"
+            color="yellow.200"
+            border="1px solid rgba(255, 215, 0, 0.3)"
+            _hover={{
+              bg: "rgba(255, 215, 0, 0.2)",
+            }}
+            onClick={() => navigate("/clue")}
+          >
+            Συνέχισε την Αποστολή
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };
